@@ -1,0 +1,16 @@
+FROM python:alpine
+
+ARG ANUSER=myuser
+
+COPY crontabfile /tmp/crontabfile
+RUN apk update --no-cache && \
+    apk add --no-cache sudo && \
+    adduser -D ${ANUSER} && \
+    echo "Cmnd_Alias USERCOMMANDS = /usr/sbin/crond" >> /etc/sudoers && \
+    echo "${ANUSER} ALL=PASSWD: ALL, NOPASSWD: USERCOMMANDS" >> /etc/sudoers && \
+    crontab -u ${ANUSER} /tmp/crontabfile && \
+    rm /tmp/crontabfile
+
+USER ${ANUSER}
+
+CMD [ "sudo", "crond", "-f", "-L", "/dev/stdout" ]

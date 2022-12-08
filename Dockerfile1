@@ -1,0 +1,9 @@
+# ./Dockerfile1
+## このようにrootで動かせば普通に動く。
+FROM python:alpine
+
+COPY crontabfile /tmp/crontabfile
+RUN crontab /tmp/crontabfile && \
+    rm /tmp/crontabfile
+
+CMD [ "crond", "-f", "-L", "/dev/stdout" ]
